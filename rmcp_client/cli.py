@@ -16,7 +16,7 @@ from rmcp_client.config import (
     load_config,
     normalize_server_config,
 )
-from rmcp_client.init_repo import run_init
+from rmcp_client.init_repo import DEFAULT_DEST_NAME, format_init_summary, run_init
 
 
 CONFIG_PATH = Path("mcp_servers.json")
@@ -41,7 +41,7 @@ def parse_args() -> argparse.Namespace:
     call_parser.add_argument("--args", default="{}")
 
     init_parser = subparsers.add_parser("init", add_help=True)
-    init_parser.add_argument("dest", nargs="?", default=".")
+    init_parser.add_argument("dest", nargs="?", default=DEFAULT_DEST_NAME)
 
     return parser.parse_args()
 
@@ -166,7 +166,9 @@ def main() -> int:
             tool_args = parse_json_arg(args.args)
             payload = asyncio.run(run_call_tool(args.server, args.tool, tool_args))
         elif args.command == "init":
-            payload = run_init(Path(args.dest))
+            result = run_init(Path(args.dest))
+            sys.stdout.write(format_init_summary(result))
+            return 0
         else:
             raise ConfigError("Unknown command", {"command": args.command})
         print_json(payload)

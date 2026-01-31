@@ -26,17 +26,16 @@ uv sync
 
 ### uvxでワンコマンド初期化（推奨）
 
-空ディレクトリで実行すると、このリポジトリの内容を展開します。
+空ディレクトリで実行すると、`fastmcp-remote-mcp-client/` フォルダが作られ、
+その中にこのリポジトリの内容が展開されます。
 
 ```bash
-mkdir rmcp-client
-cd rmcp-client
-uvx --from git+https://github.com/ekozmdev/fastmcp-remote-mcp-client rmcp-client init .
+uvx --from git+https://github.com/ekozmdev/fastmcp-remote-mcp-client init
 ```
 
-実行結果のJSONに以下が含まれるので、指示に従ってください。
-- `gitignore_entry`（開発プロジェクトの `.gitignore` に追記）
-- `agents_instructions`（AIエージェントの指示ファイルへ追記）
+実行後は、人が読める形式で `AGENTS.md` に追記すべき内容などが表示されます。
+このフォルダには `**/*` を書いた `.gitignore` が作成されるため、
+親プロジェクトの `.gitignore` を編集する必要はありません。
 
 ## 設定ファイル
 
@@ -106,10 +105,12 @@ python -m rmcp_client.cli call-tool \
 ## init コマンド
 
 `init` はこのリポジトリの内容を指定ディレクトリに展開します。
+デフォルトは `fastmcp-remote-mcp-client/` に展開します。
 展開先は空ディレクトリである必要があります。
 
 ```bash
-uvx --from git+https://github.com/ekozmdev/fastmcp-remote-mcp-client rmcp-client init <dest>
+uvx --from git+https://github.com/ekozmdev/fastmcp-remote-mcp-client init
+uvx --from git+https://github.com/ekozmdev/fastmcp-remote-mcp-client init <dest>
 ```
 
 ## AIエージェント向けインストラクション（貼り付け用）

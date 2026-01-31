@@ -10,6 +10,7 @@ dependencies = [
 
 [project.scripts]
 rmcp-client = "rmcp_client.cli:main"
+init = "rmcp_client.init_cli:main"
 
 [build-system]
 requires = ["hatchling>=1.27.0,<2.0.0"]

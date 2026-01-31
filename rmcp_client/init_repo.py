@@ -4,6 +4,7 @@ import shutil
 import tempfile
 import urllib.request
 import zipfile
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -11,6 +12,15 @@ from rmcp_client.config import ConfigError
 
 DEFAULT_REPO = "https://github.com/ekozmdev/fastmcp-remote-mcp-client"
 DEFAULT_REF = "main"
+DEFAULT_DEST_NAME = "fastmcp-remote-mcp-client"
+EMBEDDED_GITIGNORE = "**/*\n"
+
+
+@dataclass(frozen=True)
+class InitResult:
+    path: Path
+    agents_instructions: str
+    next_steps: list[str]
 
 
 def build_repo_zip_url(repo_url: str, ref: str) -> str:
@@ -72,7 +82,7 @@ def build_agents_instructions() -> str:
     )
 
 
-def run_init(dest: Path) -> dict[str, Any]:
+def run_init(dest: Path) -> InitResult:
     ensure_empty_dir(dest)
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_path = Path(tmp_dir)
@@ -90,19 +100,32 @@ def run_init(dest: Path) -> dict[str, Any]:
         for item in root.iterdir():
             shutil.move(str(item), dest / item.name)
 
-    ignore_entry = f"{dest.resolve().name}/"
-    return {
-        "ok": True,
-        "result": {
-            "message": "Repository contents were initialized.",
-            "path": str(dest.resolve()),
-            "gitignore_entry": ignore_entry,
-            "agents_instructions": build_agents_instructions(),
-            "next_steps": [
-                f"Add '{ignore_entry}' to your project's .gitignore",
-                "Append 'agents_instructions' to your project's AGENTS.md (or equivalent)",
-                f"cd {dest.resolve()}",
-                "uv sync",
-            ],
-        },
-    }
+    (dest / ".gitignore").write_text(EMBEDDED_GITIGNORE, encoding="utf-8")
+    return InitResult(
+        path=dest.resolve(),
+        agents_instructions=build_agents_instructions(),
+        next_steps=[
+            "Append 'agents_instructions' to your project's AGENTS.md (or equivalent)",
+            f"cd {dest.resolve()}",
+            "uv sync",
+        ],
+    )
+
+
+def format_init_summary(result: InitResult) -> str:
+    lines = [
+        "Repository contents were initialized.",
+        f"Path: {result.path}",
+        "",
+        "The generated folder includes a .gitignore with '**/*',",
+        "so you do not need to update your project's .gitignore.",
+        "",
+        "Add the following to your project's AGENTS.md (or equivalent):",
+        "----",
+        result.agents_instructions.rstrip(),
+        "----",
+        "",
+        "Next steps:",
+    ]
+    lines.extend([f"- {step}" for step in result.next_steps])
+    return "\n".join(lines) + "\n"

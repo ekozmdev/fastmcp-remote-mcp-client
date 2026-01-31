@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "deepwiki": {
+      "transport": "http",
+      "url": "https://mcp.deepwiki.com/mcp"
+    },
+    "microsoft-learn": {
+      "transport": "http",
+      "url": "https://learn.microsoft.com/api/mcp"
+    },
+    "aws-knowledge": {
+      "transport": "http",
+      "url": "https://knowledge-mcp.global.api.aws"
+    },
+    "context7": {
+      "transport": "http",
+      "url": "https://mcp.context7.com/mcp"
+    }
+  }
+}

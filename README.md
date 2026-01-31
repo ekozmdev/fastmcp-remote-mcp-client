@@ -96,11 +96,14 @@ python -m rmcp_client.cli call-tool \
 ```text
 リモートMCPはこのCLIを介して呼び出すこと。
 コマンドは毎回ワンショットで実行し、標準出力のJSONのみを解析する。
+このCLIは専用リポジトリ内で実行するため、必ずツールのフォルダへ移動してから `uv run` する。
 
 使い方:
 - ツール一覧:
+  cd <path/to/fastmcp-remote-mcp-client>
   uv run python -m rmcp_client.cli list-tools --server <server-name>
 - ツール呼び出し:
+  cd <path/to/fastmcp-remote-mcp-client>
   uv run python -m rmcp_client.cli call-tool --server <server-name> --tool <tool-name> --args '<json-object>'
 
 注意:

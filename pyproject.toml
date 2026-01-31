@@ -8,6 +8,13 @@ dependencies = [
     "fastmcp>=2.14.4,<3.0.0",
 ]
 
+[project.scripts]
+rmcp-client = "rmcp_client.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.27.0,<2.0.0"]
+build-backend = "hatchling.build"
+
 [tool.uv]
 add-bounds = "major"
 
@@ -15,3 +22,6 @@ add-bounds = "major"
 dev = [
     "ruff>=0.14.14,<0.15.0",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["rmcp_client"]

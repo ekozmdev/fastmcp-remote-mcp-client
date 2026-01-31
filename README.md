@@ -24,6 +24,20 @@ cd rmcp-client
 uv sync
 ```
 
+### uvxでワンコマンド初期化（推奨）
+
+空ディレクトリで実行すると、このリポジトリの内容を展開します。
+
+```bash
+mkdir rmcp-client
+cd rmcp-client
+uvx --from git+https://github.com/ekozmdev/fastmcp-remote-mcp-client rmcp-client init .
+```
+
+実行結果のJSONに以下が含まれるので、指示に従ってください。
+- `gitignore_entry`（開発プロジェクトの `.gitignore` に追記）
+- `agents_instructions`（AIエージェントの指示ファイルへ追記）
+
 ## 設定ファイル
 
 `mcp_servers.json` をプロジェクトルートに置き、接続先を定義します。
@@ -88,6 +102,15 @@ python -m rmcp_client.cli call-tool \
 - `--server` は必須
 - 設定ファイルは `mcp_servers.json` 固定
 - `call-tool` の `--args` はJSONオブジェクトのみ
+
+## init コマンド
+
+`init` はこのリポジトリの内容を指定ディレクトリに展開します。
+展開先は空ディレクトリである必要があります。
+
+```bash
+uvx --from git+https://github.com/ekozmdev/fastmcp-remote-mcp-client rmcp-client init <dest>
+```
 
 ## AIエージェント向けインストラクション（貼り付け用）
 

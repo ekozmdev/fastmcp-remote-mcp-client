@@ -16,6 +16,7 @@ from rmcp_client.config import (
     load_config,
     normalize_server_config,
 )
+from rmcp_client.init_repo import run_init
 
 
 CONFIG_PATH = Path("mcp_servers.json")
@@ -27,17 +28,20 @@ class JsonArgumentParser(argparse.ArgumentParser):
 
 
 def parse_args() -> argparse.Namespace:
-    common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--server")
+    server_parent = argparse.ArgumentParser(add_help=False)
+    server_parent.add_argument("--server")
 
-    parser = JsonArgumentParser(prog="rmcp-client", add_help=False, parents=[common])
+    parser = JsonArgumentParser(prog="rmcp-client", add_help=False)
     subparsers = parser.add_subparsers(dest="command")
 
-    subparsers.add_parser("list-tools", parents=[common], add_help=True)
+    subparsers.add_parser("list-tools", parents=[server_parent], add_help=True)
 
-    call_parser = subparsers.add_parser("call-tool", parents=[common], add_help=True)
+    call_parser = subparsers.add_parser("call-tool", parents=[server_parent], add_help=True)
     call_parser.add_argument("--tool")
     call_parser.add_argument("--args", default="{}")
+
+    init_parser = subparsers.add_parser("init", add_help=True)
+    init_parser.add_argument("dest", nargs="?", default=".")
 
     return parser.parse_args()
 
@@ -128,6 +132,7 @@ def print_json(payload: dict[str, Any]) -> None:
     sys.stdout.write("\n")
 
 
+
 def make_error_payload(exc: Exception) -> dict[str, Any]:
     err_type = exc.__class__.__name__
     message = str(exc)
@@ -145,8 +150,12 @@ def main() -> int:
     try:
         args = parse_args()
         if not args.command:
-            raise ConfigError("Command is required", {"allowed": ["list-tools", "call-tool"]})
-        if not args.server:
+            raise ConfigError(
+                "Command is required",
+                {"allowed": ["list-tools", "call-tool", "init"]},
+            )
+
+        if args.command in {"list-tools", "call-tool"} and not args.server:
             raise ConfigError("--server is required")
 
         if args.command == "list-tools":
@@ -156,6 +165,8 @@ def main() -> int:
                 raise ConfigError("--tool is required for call-tool")
             tool_args = parse_json_arg(args.args)
             payload = asyncio.run(run_call_tool(args.server, args.tool, tool_args))
+        elif args.command == "init":
+            payload = run_init(Path(args.dest))
         else:
             raise ConfigError("Unknown command", {"command": args.command})
         print_json(payload)

@@ -92,9 +92,10 @@ python -m rmcp_client.cli call-tool \
 
 ## 出力仕様
 
-- 標準出力はJSONのみ。
+- `list-tools` / `call-tool` はJSONのみ（標準出力）。
 - 失敗時も標準出力へJSONを返し、終了コードは `1`。
 - JSONはUTF-8で出力し、非ASCIIはエスケープしません。
+- `init` は人が読める説明文を標準出力に出します。
 
 ## CLI仕様（抜粋）
 

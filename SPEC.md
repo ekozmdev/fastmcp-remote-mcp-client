@@ -2,12 +2,12 @@
 
 ## 目的
 - リモートMCPに直接接続できないAIエージェントから、CLIを介してワンショットでMCPツールを呼び出せるようにする。
-- 1コマンド=1セッションで完結し、標準出力にJSONを返す。
+- `list-tools` / `call-tool` は1コマンド=1セッションで完結し、標準出力にJSONを返す。
 
 ## ゴール
 - FastMCPの `Client` を用いてリモートMCPに接続し、`list_tools` と `call_tool` を実行できる。
 - 設定は `mcp_servers.json` のみ（CLIでURLやヘッダーは指定しない）。
-- 人間向け整形は行わず、標準出力はJSONのみ。
+- `list-tools` / `call-tool` はJSONのみ、`init` は人が読める形式で出力する。
 
 ## 非ゴール
 - 常駐プロセス/セッション維持
@@ -33,7 +33,7 @@
   - `<dest>`: 展開先ディレクトリ（省略時は `fastmcp-remote-mcp-client/`）
   - 展開先は空ディレクトリであること（非空ならエラー）
 
-### 出力(JSON)
+### 出力（`list-tools` / `call-tool`）
 - 成功:
   ```json
   {"ok": true, "result": <tool_result_or_tools>}
@@ -83,11 +83,15 @@
 - `headers` が必要な場合はサーバー定義に `headers` を追加する。
 - `serverUrl` が与えられた場合は `url` に正規化して扱う。
 
-## モジュール構成（予定）
+## モジュール構成
 - `rmcp_client/config.py`
   - 設定読み込み、検証、正規化
 - `rmcp_client/cli.py`
   - CLI引数解析、`Client` 経由の実行、JSON出力
+- `rmcp_client/init_repo.py`
+  - `init` のリポジトリ展開とメッセージ生成
+- `rmcp_client/init_cli.py`
+  - `uvx ... init` 用の薄いCLI
 - `rmcp_client/__init__.py`
 
 ## 動作例

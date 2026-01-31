@@ -14,6 +14,7 @@ DEFAULT_REPO = "https://github.com/ekozmdev/fastmcp-remote-mcp-client"
 DEFAULT_REF = "main"
 DEFAULT_DEST_NAME = "fastmcp-remote-mcp-client"
 EMBEDDED_GITIGNORE = "**/*\n"
+DOWNLOAD_TIMEOUT_SECONDS = 30
 
 
 @dataclass(frozen=True)
@@ -57,7 +58,10 @@ def safe_extract(zip_path: Path, dest: Path) -> None:
 def download_repo_zip(repo_url: str, ref: str, target: Path) -> None:
     zip_url = build_repo_zip_url(repo_url, ref)
     try:
-        with urllib.request.urlopen(zip_url) as resp, open(target, "wb") as dst:
+        with urllib.request.urlopen(
+            urllib.request.Request(zip_url, headers={"User-Agent": "rmcp-client/0.1"}),
+            timeout=DOWNLOAD_TIMEOUT_SECONDS,
+        ) as resp, open(target, "wb") as dst:
             shutil.copyfileobj(resp, dst)
     except Exception as exc:
         raise ConfigError("Failed to download repository archive", {"url": zip_url}) from exc
@@ -129,3 +133,12 @@ def format_init_summary(result: InitResult) -> str:
     ]
     lines.extend([f"- {step}" for step in result.next_steps])
     return "\n".join(lines) + "\n"
+
+
+def format_init_error(exc: Exception) -> str:
+    if isinstance(exc, ConfigError):
+        details = exc.details
+        if details:
+            return f"Init failed: {exc} ({details})\n"
+        return f"Init failed: {exc}\n"
+    return f"Init failed: {exc}\n"

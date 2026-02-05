@@ -69,7 +69,9 @@ def download_repo_zip(repo_url: str, ref: str, target: Path) -> None:
 
 def build_agents_instructions() -> str:
     return (
-        "リモートMCPはこのCLIを介して呼び出すこと。\n"
+        "## リモートMCPの使い方\n"
+        ""
+        "リモートMCPは./fastmcp-remote-mcp-clientにあるCLIを介して呼び出すこと。\n"
         "コマンドは毎回ワンショットで実行し、標準出力のJSONのみを解析する。\n"
         "このCLIは専用リポジトリ内で実行するため、必ずツールのフォルダへ移動してから uv run する。\n\n"
         "使い方:\n"
